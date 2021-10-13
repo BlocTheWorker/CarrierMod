@@ -1,0 +1,183 @@
+<prefabs>
+    <game_entity name="torch_burning_prefab" old_prefab_name="">
+        <transform position="0.019, -0.014, 0.331" rotation_euler="0.000, 0.000, 0.922"/>
+        <physics mass="1.000"/>
+        <scripts>
+            <script name="LightCycle">
+                <variables>
+                    <variable name="alwaysBurn" value="true"/>
+                </variables>
+            </script>
+        </scripts>
+        <children>
+            <game_entity name="fire_light" old_prefab_name="">
+                <transform position="0.005, 0.206, -0.372" rotation_euler="0.000, 0.000, 0.089"/>
+                <physics mass="1.000"/>
+                <components>
+                    <light_component color="1.000, 0.541, 0.020" intensity="200.000" radius="12.000" flicker_interval="0.500" flicker_magnitude="0.700" local_frame_rot="12.000000, 0.000000, 0.000000, 0.000000, 12.000000, 0.000000, 0.000000, 0.000000, 12.000000" hotspot_angle="30.000" falloff_angle="45.000" shadow="1" shadow_size_multiplier="1" shadow_radius="6.000"/>
+                </components>
+                <scripts>
+                    <script name="LightCycle">
+                        <variables>
+                            <variable name="alwaysBurn" value="false"/>
+                        </variables>
+                    </script>
+                </scripts>
+                <children>
+                    <game_entity name="outdoor_fire_small" old_prefab_name="">
+                        <transform position="0.007, 0.027, -0.642" rotation_euler="0.000, 0.000, -1.718"/>
+                        <physics mass="1.000"/>
+                        <components>
+                            <particle_system_instanced_component>
+                                <effect name="outdoor_fire_small">
+                                    <emitters>
+                                        <emitter name="Emitter" _index_="0">
+                                            <flags>
+                                                <flag name="emit_while_moving" value="false"/>
+                                                <flag name="dont_emit_while_moving" value="false"/>
+                                                <flag name="emit_at_once" value="false"/>
+                                                <flag name="local_emit_dir" value="true"/>
+                                                <flag name="loop_sprite" value="false"/>
+                                                <flag name="uses_sprite_animation" value="true"/>
+                                                <flag name="scale_with_respect_to_emitter_velocity" value="false"/>
+                                                <flag name="skew_with_respect_to_particle_velocity" value="true"/>
+                                                <flag name="spherical_normals" value="false"/>
+                                                <flag name="emit_on_terrain" value="false"/>
+                                                <flag name="select_random_sample_mesh" value="false"/>
+                                                <flag name="fixed_billboard_direction" value="false"/>
+                                                <flag name="order_by_distance" value="false"/>
+                                                <flag name="select_random_sprite" value="false"/>
+                                                <flag name="create_decal_on_collision" value="false"/>
+                                                <flag name="create_decal_only_once" value="false"/>
+                                                <flag name="randomize_collision_decal_rotation" value="false"/>
+                                                <flag name="permanent_collision_decals" value="false"/>
+                                                <flag name="collide_with_objects" value="false"/>
+                                                <flag name="use_color_from_terrain" value="false"/>
+                                                <flag name="enable_collision" value="false"/>
+                                            </flags>
+                                            <parameters>
+                                                <parameter name="emitter_life" value="0.000"/>
+                                                <parameter name="activation_delay" value="0.000"/>
+                                                <parameter name="skew_with_particle_velocity_coef" value="8.000"/>
+                                                <parameter name="skew_with_particle_velocity_limit" value="0.000"/>
+                                                <parameter name="scale_with_emitter_velocity_coef" value="0.000"/>
+                                                <parameter name="inherit_emitter_velocity" value="0.000"/>
+                                                <parameter name="emit_volume" value="0.200, 0.200, 0.000"/>
+                                                <parameter name="emit_sphere_radius" value="1.000"/>
+                                                <parameter name="gravity" value="0.000, 0.000, 10.000"/>
+                                                <parameter name="fixed_billboard_direction" value="0.000, 0.000, 1.000"/>
+                                                <parameter name="emission_speed_limit" value="0.000"/>
+                                                <parameter name="decal_min_scale" value="1.000, 1.000"/>
+                                                <parameter name="decal_max_scale" value="1.000, 1.000"/>
+                                                <parameter name="skinned_decal_start_index" value="-1"/>
+                                                <parameter name="skinned_decal_end_index" value="-1"/>
+                                                <parameter name="max_alive_particle_count" value="0"/>
+                                                <parameter name="quad_scale" value="0.235, 0.235"/>
+                                                <parameter name="quad_bias" value="0.000, 0.000"/>
+                                                <parameter name="texture_sprite_count" value="5, 5"/>
+                                                <parameter name="texture_sprite_frame_count" value="25"/>
+                                                <parameter name="texture_sprite_frame_rate" value="30.000"/>
+                                                <parameter name="fixed_particle_initial_speed" value="0.000"/>
+                                                <parameter name="fadeout_distance" value="1.000"/>
+                                                <parameter name="fadeout_coef" value="0.000"/>
+                                                <parameter name="camera_fadeout_coef" value="0.000"/>
+                                                <parameter name="backlight_multiplier" value="0.000"/>
+                                                <parameter name="diffuse_multiplier" value="250.000"/>
+                                                <parameter name="emissive_multiplier" value="1.000"/>
+                                                <parameter name="heatmap_multiplier" value="1.000"/>
+                                                <parameter name="emission_turbulence_interval" value="340282346638528859811704183484516925440.000"/>
+                                                <parameter name="emission_turbulence_strength" value="0.000"/>
+                                                <parameter name="collision_damping" value="0.000"/>
+                                                <parameter name="collision_angular_damping" value="0.000"/>
+                                                <parameter name="cone_emit_angle" value="0.000"/>
+                                                <parameter name="particle_size_curve_op" value="add"/>
+                                                <parameter name="emit_volume_type" value="box"/>
+                                                <parameter name="billboard_type" value="3d"/>
+                                                <parameter name="collision_behaviour" value="normal"/>
+                                                <parameter name="emission_velocity_model" value="random_velocity_components"/>
+                                                <parameter name="initial_rotation" base="0.000" bias="180.000"/>
+                                                <parameter name="damping" base="0.733" bias="0.000"/>
+                                                <parameter name="turbulence_strength" base="0.000" bias="0.000"/>
+                                                <parameter name="angular_damping" base="0.654" bias="0.000"/>
+                                                <parameter name="particle_life" base="2.000" bias="0.000"/>
+                                                <parameter name="emission_rate" base="10.000" bias="0.000"/>
+                                                <parameter name="cone_emit_velocity" base="1.000" bias="0.000"/>
+                                                <parameter name="emit_velocity_x" base="0.000" bias="0.000"/>
+                                                <parameter name="emit_velocity_y" base="0.000" bias="0.000"/>
+                                                <parameter name="emit_velocity_z" base="1.000" bias="0.000"/>
+                                                <parameter name="emit_rotation_speed" base="0.000" bias="99.981"/>
+                                                <parameter name="wind_effect" base="1.000" bias="0.000"/>
+                                                <parameter name="particle_size" base="0.000" bias="0.000">
+                                                    <curve name="particle_life" version="1" default="1.000" curve_multiplier="2.000">
+                                                        <keys>
+                                                            <key time="0.000" value="1.000" tangent="0.014, 0.000"/>
+                                                            <key time="0.069" value="1.000" tangent="-0.041, 0.000"/>
+                                                            <key time="0.069" value="1.000" tangent="0.041, 0.000"/>
+                                                            <key time="0.414" value="0.087" tangent="-0.041, 0.000"/>
+                                                            <key time="0.414" value="0.087" tangent="0.041, 0.000"/>
+                                                            <key time="1.000" value="0.025" tangent="-0.200, 0.000"/>
+                                                        </keys>
+                                                    </curve>
+                                                </parameter>
+                                                <parameter name="material" value="prt_shd_fire_1"/>
+                                                <parameter name="sample_mesh" value=""/>
+                                                <parameter name="particle_color">
+                                                    <color>
+                                                        <keys>
+                                                            <key time="0.000" value="1.000, 0.752, 0.431"/>
+                                                            <key time="1.000" value="0.902, 0.039, 0.039"/>
+                                                        </keys>
+                                                    </color>
+                                                    <alpha>
+                                                        <keys>
+                                                            <key time="0.000" value="0.000"/>
+                                                            <key time="0.200" value="1.000"/>
+                                                            <key time="1.000" value="0.000"/>
+                                                        </keys>
+                                                    </alpha>
+                                                </parameter>
+                                            </parameters>
+                                        </emitter>
+                                    </emitters>
+                                </effect>
+                            </particle_system_instanced_component>
+                        </components>
+                        <additional_features>
+                            <feature name="apply_factor_color_to_all_components" value="false"/>
+                        </additional_features>
+                    </game_entity>
+                </children>
+                <additional_features>
+                    <feature name="apply_factor_color_to_all_components" value="false"/>
+                </additional_features>
+            </game_entity>
+            <game_entity name="prt_torch_fire_sparks" old_prefab_name="">
+                <transform position="0.005, 0.206, -0.372" rotation_euler="0.000, 0.000, 0.089" scale="0.732, 0.932, 0.632"/>
+                <physics mass="1.000"/>
+                <components>
+                    <particle_system_instanced_component>
+                        <effect_ref base_effect="{8F145B5A-5469-461F-98B6-3CDCF53DFD9D}"/>
+                    </particle_system_instanced_component>
+                </components>
+                <additional_features>
+                    <feature name="apply_factor_color_to_all_components" value="false"/>
+                </additional_features>
+            </game_entity>
+            <game_entity name="flame_loop_haze" old_prefab_name="">
+                <transform position="-0.005, 0.200, -0.389" rotation_euler="0.000, 0.000, 0.089" scale="1.132, 1.132, 1.132"/>
+                <physics mass="1.000"/>
+                <components>
+                    <meta_mesh_component name="billboard_mesh">
+                        <mesh name="billboard_mesh" argument="16.000, 8.000, 48.000, 127.000" argument2="1.000, 1.000, 1.000, 1.000"/>
+                    </meta_mesh_component>
+                </components>
+                <additional_features>
+                    <feature name="apply_factor_color_to_all_components" value="false"/>
+                </additional_features>
+            </game_entity>
+        </children>
+        <additional_features>
+            <feature name="apply_factor_color_to_all_components" value="false"/>
+        </additional_features>
+    </game_entity>
+</prefabs>

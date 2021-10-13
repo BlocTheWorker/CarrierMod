@@ -1,0 +1,28 @@
+{
+  "Banner": {
+	  "AllowSiegeAttackers": true,
+	  "AllowSiegeDefenders": false,
+	  "AllowRaidAttackers": true,
+	  "AllowRaidDefenders": false,
+	  "AllowInHideout": false,
+	  "AllowMoraleBoostWhenBannermenReachWalls": true,
+	  "AllowBannermenReachedMessageAndSound": true,
+	  
+	  "MoraleRadius": 20,
+	  "MoraleDropWhenBannermanKilled": 15,
+	  "MaximumMoraleWhenAroundAllyBannerman": 40,
+	  "PerInfantry": 5,
+	  "PerCavalry": 10,
+	  "PerArcher": 5,
+	  "PerHorseArcher": 10,
+	  "PerHeavyCavalry": 5,
+	  "PerHeavyInfantry": 5,
+	  "PerSkirmisher": 5,
+	  "PerLightCavalry": 10
+  },
+  "Extra": {
+	  "UseTierBasedBannerman": true,
+	  "AlsoUseTorchAtNight": true,
+	  "AllowNonNobleArmiesToCarryBanner": false
+  }
+}

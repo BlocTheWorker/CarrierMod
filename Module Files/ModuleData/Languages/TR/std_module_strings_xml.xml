@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Türkçe" />
+  </tags>
+  <strings>
+    <string id="BLCCliLPkWgI" text="Sancağın düşman surlarına ulaştı!" /> 
+	<string id="BLCCliLPkcas" text="Sancaktar" /> 
+	<string id="BLCCOJoEzcxN" text="Düşman sancağı surlarına kadar geldi!" /> 
+	<string id="BLCC5FzIOYzl" text="Standard Sancak" />
+	<string id="BLCCX1clnt60" text="Salebi" />
+	<string id="BLCCX1clnt61" text="Meşale" />	
+  </strings>
+</base>

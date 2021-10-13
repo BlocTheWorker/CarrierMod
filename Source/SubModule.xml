@@ -1,0 +1,42 @@
+﻿<Module>
+  <Name value="Carrier"/>
+  <Id value="Carrier"/>
+  <Version value="v1.0.0"/>
+  <SingleplayerModule value="true"/>
+  <MultiplayerModule value="false"/>
+  <DependedModules>
+    <DependedModule Id="Native" DependentVersion="e1.6.3"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="e1.6.3"/>
+    <DependedModule Id="Sandbox" DependentVersion="e1.6.3"/>
+    <DependedModule Id="StoryMode" DependentVersion="e1.6.3"/>
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="Carrier"/>
+      <DLLName value="Carrier.dll"/>
+      <SubModuleClassType value="Carrier.SubModule"/>
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+  <Xmls>
+    <XmlNode>
+      <XmlName id="NPCCharacters" path="CarrierTroops"/>
+      <IncludedGameTypes>
+        <GameType value="Campaign"/>
+        <GameType value="CampaignStoryMode"/>
+        <GameType value="CustomGame"/>
+      </IncludedGameTypes>
+    </XmlNode>
+    <XmlNode>
+      <XmlName id="Items" path="CarrierItems"/>
+      <IncludedGameTypes>
+        <GameType value="Campaign"/>
+        <GameType value="CampaignStoryMode"/>
+        <GameType value="CustomGame"/>
+      </IncludedGameTypes>
+    </XmlNode>
+  </Xmls>
+</Module>

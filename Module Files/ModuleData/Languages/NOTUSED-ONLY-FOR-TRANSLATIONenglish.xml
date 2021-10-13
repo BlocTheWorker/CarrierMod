@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="BLCCliLPkWgI" text="Your banner has reached to the walls!" />
+	<string id="BLCCliLPkcas" text="Banner Carrier" /> 	
+	<string id="BLCCOJoEzcxN" text="Enemy banner has reached the walls!" /> 
+	<string id="BLCC5FzIOYzl" text="Standard Banner" />
+	<string id="BLCCX1clnt60" text="Gonfalon Banner" />
+	<string id="BLCCX1clnt61" text="Torch" />	
+  </strings>
+</base>
