@@ -1,4 +1,5 @@
 ﻿using Carrier.Behavior;
+using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -10,6 +11,7 @@ namespace Carrier
     {
         public float MORALE_EFFECT = 10, 
                      MORALE_RADIUS = 5, 
+                     CARRIER_TROOP_COST = 10,
                      MAXIMUM_MORALE_WHILE_AROUND=40;
 
         public bool USE_TORCH_IN_NIGHT_BATTLE = false,
@@ -21,7 +23,9 @@ namespace Carrier
                     USE_TIER_BASED_BANNERMAN = true,
                     ALLOW_MORALE_BOOST_FOR_WALLS = true,
                     ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS = true,
-                    ALLOW_RAID_DEFENDER_BANNERS = false;
+                    ALLOW_RAID_DEFENDER_BANNERS = false,
+                    USE_UNIT_ORDER_RELAY_SOUNDS = true,
+                    USE_REAL_TROOP_SYSTEM = false;
 
         public int PER_INFANTRY = 5,
                    PER_CAVALRY = 5,
@@ -58,6 +62,7 @@ namespace Carrier
                 config.USE_TORCH_IN_NIGHT_BATTLE = (bool)extras["AlsoUseTorchAtNight"];
                 config.ALLOW_NON_NOBLES = (bool)extras["AllowNonNobleArmiesToCarryBanner"];
                 config.USE_TIER_BASED_BANNERMAN = (bool)extras["UseTierBasedBannerman"];
+                config.USE_UNIT_ORDER_RELAY_SOUNDS = (bool)extras["UseResponsiveUnits"];
             }
             
             if (conf.ContainsKey("Banner"))
@@ -68,9 +73,11 @@ namespace Carrier
                 config.ALLOW_RAID_DEFENDER_BANNERS = (bool)conf.SelectToken("Banner.AllowRaidDefenders");
                 config.ALLOW_MORALE_BOOST_FOR_WALLS = (bool)conf.SelectToken("Banner.AllowMoraleBoostWhenBannermenReachWalls");
                 config.ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS = (bool)conf.SelectToken("Banner.AllowBannermenReachedMessageAndSound");
-                
+                config.USE_REAL_TROOP_SYSTEM = (bool)conf.SelectToken("Banner.UseRealTroopSystem");
+
                 if (int.TryParse((string)conf["Banner"]["MoraleRadius"], out int moraleRadius)) config.MORALE_RADIUS = moraleRadius;
                 if (int.TryParse((string)conf["Banner"]["MoraleDropWhenBannermanKilled"], out int moraleEffect)) config.MORALE_EFFECT = moraleEffect;
+                if (int.TryParse((string)conf["Banner"]["CarrierTroopCost"], out int carrierCost)) config.CARRIER_TROOP_COST = carrierCost;
                 if (int.TryParse((string)conf["Banner"]["MaximumMoraleWhenAroundAllyBannerman"], out int moraleMax)) config.MAXIMUM_MORALE_WHILE_AROUND = moraleMax;
                 if (int.TryParse((string)conf["Banner"]["PerInfantry"], out int perInfantry)) config.PER_INFANTRY = perInfantry;
                 if (int.TryParse((string)conf["Banner"]["PerCavalry"], out int PerCavalry)) config.PER_CAVALRY = PerCavalry;

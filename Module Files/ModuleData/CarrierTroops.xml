@@ -5,8 +5,8 @@
          <face_key_template value="BodyProperty.fighter_empire" />
       </face>
       <skills>
-         <skill id="Athletics" value="60" />
-         <skill id="Riding" value="20" />
+         <skill id="Athletics" value="100" />
+         <skill id="Riding" value="200" />
          <skill id="OneHanded" value="70" />
          <skill id="TwoHanded" value="40" />
          <skill id="Polearm" value="40" />

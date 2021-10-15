@@ -7,10 +7,12 @@
 	  "AllowInHideout": false,
 	  "AllowMoraleBoostWhenBannermenReachWalls": true,
 	  "AllowBannermenReachedMessageAndSound": true,
-	  
+	  "UseRealTroopSystem": true,
+
 	  "MoraleRadius": 20,
 	  "MoraleDropWhenBannermanKilled": 15,
 	  "MaximumMoraleWhenAroundAllyBannerman": 40,
+	  "CarrierTroopCost": 50,
 	  "PerInfantry": 5,
 	  "PerCavalry": 10,
 	  "PerArcher": 5,
@@ -23,6 +25,7 @@
   "Extra": {
 	  "UseTierBasedBannerman": true,
 	  "AlsoUseTorchAtNight": true,
-	  "AllowNonNobleArmiesToCarryBanner": false
+	  "AllowNonNobleArmiesToCarryBanner": false,
+	  "UseResponsiveUnits": true
   }
 }

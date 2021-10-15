@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Carrier.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
@@ -9,7 +10,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace Carrier.Behavior
 {
-    public class CarrierMissionBehavior : MissionLogic
+    public class CarrierMissionController : MissionLogic
     {
         /// <summary>
         /// Simple struct to keep BattleSide - PartyBase relation. We need PartyBase for BattleCombatant ( AgentOrigin )
@@ -27,26 +28,27 @@ namespace Carrier.Behavior
         private CarrierConfig _config;
         private float _lastTick;
         private Vec3 _randomWind;
-
         
-        public CarrierMissionBehavior(CarrierConfig config) {
+        public CarrierMissionController(CarrierConfig config) {
             _config = config;
         }
 
         public override void AfterStart()
         {
-            
             _lastTick = Mission.Current.Time;
             _bannerParties = new List<SideAndParty>();
             _bannerBearersAndObject = new Dictionary<Agent, GameEntity>();
 
-            if (!Mission.Current.Scene.IsAtmosphereIndoor && !this.IsHideout() )
-            {
+            if (!Mission.Current.Scene.IsAtmosphereIndoor && !CarrierHelper.IsHideout() ) {
                 // Get spawnlogic and register it's phase change events. Although currently I have no good solution to create bannerman on reinforce waves
                 MissionAgentSpawnLogic spawnLogicBehavior = Mission.Current.GetMissionBehaviour<MissionAgentSpawnLogic>();
                 spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Attacker, new OnPhaseChangedDelegate(this.OnAttackerPhaseChanged));
                 spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Defender, new OnPhaseChangedDelegate(this.OnDefenderPhaseChanged));
             }
+
+            // Small wind effect for fun
+            _randomWind = new Vec3(MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-1f, 1f));
+
             // Get all the parties involved
             List<PartyBase> partyList = PlayerEncounter.Battle.InvolvedParties.ToList();
             partyList.OrderBy(a => a.NumberOfHealthyMembers);
@@ -80,11 +82,8 @@ namespace Carrier.Behavior
                     _bannerParties.Add( sp );
                     if (pb.Side == BattleSideEnum.Attacker && _reservedReinforceAttacker == null) _reservedReinforceAttacker = pb;
                     if (pb.Side == BattleSideEnum.Defender && _reservedReinforceDefender == null) _reservedReinforceDefender = pb;
-                }     
+                }
             }
-
-            // Small wind effect for fun
-            _randomWind = new Vec3(MBRandom.RandomFloatRanged(-3f,3f), MBRandom.RandomFloatRanged(-3f,3f), MBRandom.RandomFloatRanged(-1f,1f));
         }
 
 
@@ -95,7 +94,13 @@ namespace Carrier.Behavior
                 foreach (Team team in Mission.Teams) {
                     if(team.ActiveAgents.Count > 0) {
                         _isSpawnedTroops = true;
-                        this.CreateCarriersForTeam(team);
+                        if( _config.USE_REAL_TROOP_SYSTEM)
+                        {
+                            this.AssignAndChangeExistingBannerment(team);
+                        } else
+                        {
+                            this.CreateCarriersForTeam(team);
+                        }
                     }                    
                 }
             }
@@ -107,25 +112,121 @@ namespace Carrier.Behavior
             }
         }
 
+        
+        private void AssignAndChangeExistingBannerment(Team team)
+        {
+            Formation[] formations = team.Formations.ToArray();
+            Agent[] activeAgents = team.ActiveAgents.ToArray();
+            MBQueue<Agent> agents = new MBQueue<Agent>();
+            Equipment troopEquipment = CarrierHelper.GetBasicTroopEquipment(GetPartyBaseForTeam(team), _config);
+            foreach (Agent agent in activeAgents)
+            {
+                if ( agent.IsHuman && agent.Character.StringId == "standard_banner_carrier")
+                {
+                    _bannerBearersAndObject.Add(agent, null);   
+                    
+                    Equipment eq = new Equipment(agent.Character.Equipment);
+                    if (troopEquipment != null) {
+                        for (int k = (int)EquipmentIndex.ArmorItemBeginSlot; k < (int)EquipmentIndex.ArmorItemEndSlot - 1; k++) {
+                            eq.AddEquipmentToSlotWithoutAgent((EquipmentIndex)k, troopEquipment.GetEquipmentFromSlot((EquipmentIndex)k));
+                        }
+                    }
+                    AgentBuildData newdata = new AgentBuildData(agent.Origin);
+                    newdata.Equipment(eq);
+                    agent.ResetAgentProperties();
+                    agent.InitializeAgentProperties(eq, newdata);
+                    agent.UpdateAgentProperties();
+                    agent.EquipItemsFromSpawnEquipment();
+                    agent.UpdateSpawnEquipmentAndRefreshVisuals(eq);
+                    if (!CarrierHelper.ShouldUseTorch(_config))
+                    {
+                        agent.RemoveEquippedWeapon(EquipmentIndex.Weapon1);
+                    }
+                    else
+                    {
+                        agent.AddPrefabComponentToBone("torch_burning_prefab", Game.Current.HumanMonster.MainHandItemBoneIndex);
+                        Light pointLight = Light.CreatePointLight(10f);
+                        pointLight.SetLightFlicker(1, 0.8f);
+                        pointLight.Intensity = 70f;
+                        pointLight.LightColor = new Vec3(1f, 0.68f, 0.29f, -1f);
+                        GameEntity lightEntity = GameEntity.CreateEmpty(Mission.Current.Scene);
+                        lightEntity.AddLight(pointLight);
+                        lightEntity.SetLocalPosition(new Vec3(0.5f, 1f, 1.5f));
+                        agent.AgentVisuals.AddChildEntity(lightEntity);
+                        _bannerBearersAndObject[agent] = lightEntity;
+                    }
+                    agent.AgentVisuals.SetClothWindToWeaponAtIndex(_randomWind, true, EquipmentIndex.Weapon0);
+                    agents.Enqueue(agent);
+                }
+            }
+
+            foreach( Formation f in formations) {
+                int count = f.CountOfUnits / (int)CarrierHelper.MapFormationToConfigCount(f.FormationIndex, _config);
+                for( int i=0; i < count; i++) {
+                    if( agents.Count != 0){
+                        Agent a = agents.Dequeue();
+                        a.Formation = f;
+                        a.TeleportToPosition(f.CurrentPosition.ToVec3());
+                        if (f.IsCavalry()) {
+                            try {
+                                Agent randomAgent = f.GetUnitWithIndex(MBRandom.RandomInt(f.CountOfUnits - 1));
+                                MatrixFrame globalFrame = a.Frame;
+                                ItemRosterElement itemRosterElement1 = new ItemRosterElement(randomAgent.Character.Equipment.Horse,1);
+                                ItemRosterElement itemRosterElement2 = new ItemRosterElement(randomAgent.Character.Equipment[EquipmentIndex.HorseHarness],1);
+
+                                globalFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+                                Mission current = Mission.Current;
+                                ItemRosterElement rosterElement = itemRosterElement1;
+                                ItemRosterElement harnessRosterElement = itemRosterElement2;
+                                ref Vec3 local1 = ref globalFrame.origin;
+                                Vec2 asVec2 = globalFrame.rotation.f.AsVec2;
+                                ref Vec2 local2 = ref asVec2;
+                                f.RidingOrder = RidingOrder.RidingOrderDismount;
+                                a.SetAgentFlags(a.GetAgentFlags() | AgentFlag.CanRide);
+                                Agent horsie = current.SpawnMonster(rosterElement, harnessRosterElement, in local1, in local2, -1);
+                                horsie.SetAgentFlags(horsie.GetAgentFlags() | AgentFlag.Mountable);
+                                horsie.SetAgentDrivenPropertyValueFromConsole(DrivenProperty.MountDifficulty, 0);
+                                a.Mount(horsie);
+                                f.RidingOrder = RidingOrder.RidingOrderMount;
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    }
+                }
+                if (agents.Count == 0) break;
+            }
+
+        }
+
         public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow) {
             base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
             if( agentState == AgentState.Killed || agentState == AgentState.Unconscious) {
                 if (_bannerBearersAndObject.ContainsKey(affectedAgent)) {
                     try {
-                        if( this.ShouldUseTorch()) {
+                        if(CarrierHelper.ShouldUseTorch(_config)) {
                             GameEntity entity = _bannerBearersAndObject[affectedAgent];
                             Light light = entity.GetLight();
                             light.Dispose();
                             entity.Remove(0);
                         }
                     } catch { }
-                    if (this.IsHideout()) return;
+                    if (CarrierHelper.IsHideout()) return;
                     Agent[] agentsAround = Mission.Current.GetNearbyAllyAgents(affectedAgent.Position.AsVec2, this._config.MORALE_RADIUS, affectedAgent.Team).ToArray();
                     foreach(Agent a in agentsAround) {
                         a.SetMorale(a.GetMorale() - this._config.MORALE_EFFECT);
                     }
                 }
             }
+        }
+
+        public override void OnAgentFleeing(Agent affectedAgent)
+        {
+            if( _bannerBearersAndObject.ContainsKey(affectedAgent)) {
+                return;
+            }
+
+            base.OnAgentFleeing(affectedAgent);
         }
 
         //// Currently not used until I find a proper way to handle this
@@ -143,20 +244,20 @@ namespace Carrier.Behavior
         /// Occasional Tick. Only gets ticked once OCCASIONAL_TICK is elapsed. Triggered by built-in OnTick
         /// </summary>
         private void InternalOccasionalTick() {
-            if (this.IsHideout()) return;
+            if (CarrierHelper.IsHideout()) return;
             // Check all bannermen, update the agent morale around them until it hits the maximum
             foreach (KeyValuePair<Agent, GameEntity> pair in _bannerBearersAndObject) {
                 Agent bannerAgent = pair.Key;
                 if (!bannerAgent.IsActive() || bannerAgent.Team == null || bannerAgent.Health <= 0) continue;
 
                 if (_config.ALLOW_MORALE_BOOST_FOR_WALLS) {
-                    if (this.IsSiegeAssault() && !_isAnyBannermenReachedWalls && IsAgentStandingOnWalls(bannerAgent)) {
+                    if (CarrierHelper.IsSiegeAssault() && !_isAnyBannermenReachedWalls && IsAgentStandingOnWalls(bannerAgent)) {
                         _isAnyBannermenReachedWalls = true;
                         if ( _config.ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS) {
                             if( Mission.Current.MainAgent != null && 
                                 Mission.Current.MainAgent.Team != null && 
                                 Mission.Current.MainAgent.Team.Side == BattleSideEnum.Attacker) {
-                                InformationManager.AddQuickInformation(new TaleWorlds.Localization.TextObject("{=BLCCliLPkWgI}Your banner has reached to the walls!"), 500, bannerAgent.Character, "event:/alerts/report/battle_winning");
+                                InformationManager.AddQuickInformation(new TaleWorlds.Localization.TextObject("{=BLCCliLPkWgI}Your banner has reached the walls!"), 500, bannerAgent.Character, "event:/alerts/report/battle_winning");
                             } else
                             {
                                 InformationManager.AddQuickInformation(new TaleWorlds.Localization.TextObject("{=BLCCOJoEzcxN}Enemy banner has reached the walls!"), 500, bannerAgent.Character, "event:/alerts/report/battle_losing");
@@ -174,6 +275,12 @@ namespace Carrier.Behavior
                     if(currentMorale < _config.MAXIMUM_MORALE_WHILE_AROUND) {
                         float newMorale = Math.Min(currentMorale, currentMorale + this._config.MORALE_EFFECT);
                         a.SetMorale(newMorale);
+                        if (a.IsRunningAway || a.IsRetreating()) {
+                            a.StopRetreating();
+                        }
+                        if( a.GetMorale() > 60) {
+                            a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);
+                        }
                     }
                 }
             }
@@ -215,7 +322,7 @@ namespace Carrier.Behavior
         private PartyBase GetPartyBaseForTeam(Team team) {
             SideAndParty[] tmp = _bannerParties.ToArray();
             foreach ( SideAndParty sp in tmp) {
-                if (sp.Side == team.Side) {
+                if (team != null && sp.Side == team.Side) {
                     _bannerParties.Remove(sp);
                     return sp.PartyBase;
                 }
@@ -229,8 +336,8 @@ namespace Carrier.Behavior
             PartyBase pb = GetPartyBaseForTeam(team);
             if (pb == null) return;
             foreach ( Formation f in formations) {
-                int count = f.CountOfUnits / (int)MapFormationToConfigCount(f.FormationIndex);
-                if (this.IsHideout())
+                int count = f.CountOfUnits / (int)CarrierHelper.MapFormationToConfigCount(f.FormationIndex, _config);
+                if (CarrierHelper.IsHideout())
                 {
                     if (f.FormationIndex == FormationClass.Infantry && team.IsAttacker) count = 2;
                     else count = 0;
@@ -246,7 +353,7 @@ namespace Carrier.Behavior
                     agentBuildData.ClothingColor2(randomAgent.Origin.FactionColor2);
                     agentBuildData.Banner(randomAgent.Origin.Banner);
                     Equipment eq = new Equipment(flagCarrier.RandomBattleEquipment);
-                    Equipment basicEq = GetBasicTroopEquipment(pb);
+                    Equipment basicEq = CarrierHelper.GetBasicTroopEquipment(pb, _config);
                     if (basicEq != null) {
                         for (int k = (int)EquipmentIndex.ArmorItemBeginSlot; k < (int)EquipmentIndex.ArmorItemEndSlot - 1; k++) {
                             eq.AddEquipmentToSlotWithoutAgent((EquipmentIndex)k, basicEq.GetEquipmentFromSlot((EquipmentIndex)k));
@@ -254,7 +361,7 @@ namespace Carrier.Behavior
                     }
                     if (f.IsCavalry()) {
                         ItemObject horse = Game.Current.ObjectManager.GetObject<ItemObject>("sumpter_horse");
-                        eq.AddEquipmentToSlotWithoutAgent(EquipmentIndex.Horse, new EquipmentElement(horse));
+                        eq.AddEquipmentToSlotWithoutAgent(EquipmentIndex.Horse, randomAgent.Character.Equipment.Horse);
                     }
                     agentBuildData.Equipment(eq);
                     agentBuildData.Formation(f);
@@ -265,7 +372,7 @@ namespace Carrier.Behavior
                     //Agent agent = Mission.Current.SpawnTroop(agentBuildData.AgentOrigin, team.IsPlayerTeam, true, true, false, false, newCount, (i * spread), true, true, false, formPos.ToVec3(), formPos.Normalized(), (string)null);
                     agent.FadeIn();
                     _bannerBearersAndObject.Add(agent, null);
-                    if ( !ShouldUseTorch() ) {
+                    if ( !CarrierHelper.ShouldUseTorch(_config) ) {
                         agent.RemoveEquippedWeapon(EquipmentIndex.Weapon1);
                     } else {
                         agent.AddPrefabComponentToBone("torch_burning_prefab", Game.Current.HumanMonster.MainHandItemBoneIndex);
@@ -285,64 +392,6 @@ namespace Carrier.Behavior
             }
         }
 
-
-        /// <summary>
-        /// Get basic troop equipment. If tier based is allowed, this will return better equipment with respect to upgrade path of troop 
-        /// </summary>
-        /// <param name="pb"></param>
-        /// <returns></returns>
-        private Equipment GetBasicTroopEquipment(PartyBase pb) {
-            if( pb.MapFaction != null) {
-                if (pb.MapFaction.BasicTroop != null) {
-                    CharacterObject basicTroop = pb.Culture.BasicTroop;
-                    Equipment resEq = basicTroop.RandomBattleEquipment;
-                    if( _config.USE_TIER_BASED_BANNERMAN) {
-                        if( pb.LeaderHero != null && pb.LeaderHero.Clan != null) {
-                            int tier = pb.LeaderHero.Clan.Tier;
-                            while(basicTroop.Tier != tier && basicTroop != null) {
-                                CharacterObject[] targets = basicTroop.UpgradeTargets;
-                                if(targets.Length == 0)
-                                    break;
-                                basicTroop = basicTroop.UpgradeTargets.First();
-                                if (basicTroop != null)
-                                    resEq = basicTroop.RandomBattleEquipment;
-                            }
-                        }
-                    }
-                    return resEq;
-                }
-            }
-            return null;
-        }
-        /// <summary>
-        /// Map Formation to preset Config "Limit Per Formation" count
-        /// </summary>
-        /// <param name="f">Formation you want to convert. Unrecognized will return 5</param>
-        /// <returns></returns>
-        private float MapFormationToConfigCount(FormationClass f)
-        {
-            switch (f)
-            {
-                case FormationClass.Infantry:
-                    return _config.PER_INFANTRY;
-                case FormationClass.HorseArcher:
-                    return _config.PER_HORSE_ARCHER;
-                case FormationClass.Ranged:
-                    return _config.PER_ARCHER;
-                case FormationClass.Skirmisher:
-                    return _config.PER_SKIRMISHER;
-                case FormationClass.Cavalry:
-                    return _config.PER_CAVALRY;
-                case FormationClass.HeavyInfantry:
-                    return _config.PER_HEAVY_INFANTRY;
-                case FormationClass.HeavyCavalry:
-                    return _config.PER_HEAVY_CAVALRY;
-                case FormationClass.LightCavalry:
-                    return _config.PER_LIGHT_CAV;
-                default:
-                    return 5;
-            }
-        }
 
         /// <summary>
         /// Modified version of original SpawnTroop method. Changed origin requirement to AgentBuildData so that we can tweak it outside of the method.
@@ -434,21 +483,5 @@ namespace Carrier.Behavior
             }
             return agent;
         }
-
-        private bool IsHideout()
-        {
-            return (PlayerEncounter.Battle != null && PlayerEncounter.Battle.IsHideoutBattle);
-        }
-
-        private bool IsSiegeAssault()
-        {
-            return (PlayerEncounter.Battle != null && PlayerEncounter.Battle.IsSiegeAssault);
-        }
-
-        private bool ShouldUseTorch()
-        {
-            return (_config.USE_TORCH_IN_NIGHT_BATTLE && (Mission.Current.Scene.TimeOfDay >= 17 || Mission.Current.Scene.TimeOfDay <= 4f));
-        }
-
     }
 }
