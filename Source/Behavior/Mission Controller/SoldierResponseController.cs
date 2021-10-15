@@ -87,7 +87,7 @@ namespace Carrier.Behavior.Mission_Controller
                         else if (orderType == OrderType.FireAtWill)
                             va.Voice = SkinVoiceManager.VoiceType.FireAtWill;
                         else
-                            va.Voice = MBRandom.RandomFloat > 0.5 ? SkinVoiceManager.VoiceType.Pain : SkinVoiceManager.VoiceType.Grunt;
+                            va.Voice = MBRandom.RandomFloat > 0.5 ? SkinVoiceManager.VoiceType.MpAffirmative : SkinVoiceManager.VoiceType.Grunt;
                         _actionQueue.Enqueue( -1 * ( (k*inc) + currentTime + 0.1f ), va);
                     }
                 }

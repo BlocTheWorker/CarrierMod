@@ -275,9 +275,6 @@ namespace Carrier.Behavior
                     if(currentMorale < _config.MAXIMUM_MORALE_WHILE_AROUND) {
                         float newMorale = Math.Min(currentMorale, currentMorale + this._config.MORALE_EFFECT);
                         a.SetMorale(newMorale);
-                        if (a.IsRunningAway || a.IsRetreating()) {
-                            a.StopRetreating();
-                        }
                         if( a.GetMorale() > 60) {
                             a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);
                         }
