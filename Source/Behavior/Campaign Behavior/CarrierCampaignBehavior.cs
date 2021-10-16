@@ -97,7 +97,7 @@ namespace Carrier.Behavior {
         public void OnMissionStarted(IMission mission) {
             try {
                 Mission currrentMission = (Mission)mission;
-                if (currrentMission == null || currrentMission.CombatType != Mission.MissionCombatType.Combat) return;
+                if (currrentMission == null || currrentMission.CombatType != Mission.MissionCombatType.Combat || (PlayerEncounter.Battle != null && PlayerEncounter.Battle.IsAlleyFight)) return;
                 if (PlayerEncounter.EncounteredBattle == null) return;
                 currrentMission.AddMissionBehaviour((MissionBehaviour)new CarrierMissionController(_config));
                 if( _config.USE_UNIT_ORDER_RELAY_SOUNDS)

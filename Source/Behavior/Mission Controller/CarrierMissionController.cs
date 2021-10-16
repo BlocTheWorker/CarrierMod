@@ -21,68 +21,80 @@ namespace Carrier.Behavior
         }
 
         private const float OCCASIONAL_TICK = 5; 
-        private bool _isSpawnedTroops = false, _isAnyBannermenReachedWalls = false;
+        private bool _isSpawnedTroops = false, _isAnyBannermenReachedWalls = false, _didSomehowCausedError = false;
         private List<SideAndParty> _bannerParties;
         private PartyBase _reservedReinforceDefender, _reservedReinforceAttacker;
         private Dictionary<Agent, GameEntity> _bannerBearersAndObject;
         private CarrierConfig _config;
         private float _lastTick;
         private Vec3 _randomWind;
-        
+
         public CarrierMissionController(CarrierConfig config) {
             _config = config;
         }
 
         public override void AfterStart()
         {
-            _lastTick = Mission.Current.Time;
-            _bannerParties = new List<SideAndParty>();
-            _bannerBearersAndObject = new Dictionary<Agent, GameEntity>();
+            try
+            {
+                _lastTick = Mission.Current.Time;
+                _bannerParties = new List<SideAndParty>();
+                _bannerBearersAndObject = new Dictionary<Agent, GameEntity>();
 
-            if (!Mission.Current.Scene.IsAtmosphereIndoor && !CarrierHelper.IsHideout() ) {
-                // Get spawnlogic and register it's phase change events. Although currently I have no good solution to create bannerman on reinforce waves
-                MissionAgentSpawnLogic spawnLogicBehavior = Mission.Current.GetMissionBehaviour<MissionAgentSpawnLogic>();
-                spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Attacker, new OnPhaseChangedDelegate(this.OnAttackerPhaseChanged));
-                spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Defender, new OnPhaseChangedDelegate(this.OnDefenderPhaseChanged));
-            }
-
-            // Small wind effect for fun
-            _randomWind = new Vec3(MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-1f, 1f));
-
-            // Get all the parties involved
-            List<PartyBase> partyList = PlayerEncounter.Battle.InvolvedParties.ToList();
-            partyList.OrderBy(a => a.NumberOfHealthyMembers);
-
-            MapEvent currentMapEvent = PlayerEncounter.EncounteredBattle;
-            foreach (PartyBase pb in partyList){
-                // Check certain conditions with respect to config file
-                if (currentMapEvent.IsRaid) { 
-                    if (pb.Side == BattleSideEnum.Attacker && !_config.ALLOW_RAID_ATTACKER_BANNERS)
-                        continue;
-                    else if ((pb.Side == BattleSideEnum.Defender && !_config.ALLOW_RAID_DEFENDER_BANNERS))
-                        continue;
+                if (!Mission.Current.Scene.IsAtmosphereIndoor && !CarrierHelper.IsHideout())
+                {
+                    // Get spawnlogic and register it's phase change events. Although currently I have no good solution to create bannerman on reinforce waves
+                    MissionAgentSpawnLogic spawnLogicBehavior = Mission.Current.GetMissionBehaviour<MissionAgentSpawnLogic>();
+                    spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Attacker, new OnPhaseChangedDelegate(this.OnAttackerPhaseChanged));
+                    spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Defender, new OnPhaseChangedDelegate(this.OnDefenderPhaseChanged));
                 }
 
-                if (currentMapEvent.IsSiegeAssault || currentMapEvent.IsSiegeOutside) {
-                    if (pb.Side == BattleSideEnum.Attacker && !_config.ALLOW_SIEGE_ATTACKER_BANNERS)
-                        continue;
-                    else if ((pb.Side == BattleSideEnum.Defender && !_config.ALLOW_SIEGE_DEFENDER_BANNERS))
-                        continue;
-                }
+                // Small wind effect for fun
+                _randomWind = new Vec3(MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-3f, 3f), MBRandom.RandomFloatRanged(-1f, 1f));
 
-                if(currentMapEvent.IsHideoutBattle && !_config.ALLOW_IN_HIDEOUT) {
-                   continue;
-                }
+                // Get all the parties involved
+                List<PartyBase> partyList = PlayerEncounter.Battle.InvolvedParties.ToList();
+                partyList.OrderBy(a => a.NumberOfHealthyMembers);
 
-                // IF Non-Nobles are allowed and party is mobile and not bandit 
-                // OR Party has MapFaction, NOT Villager or Caravan or Bandit or Garrison
-                if ( (_config.ALLOW_NON_NOBLES && (!pb.MapFaction.IsBanditFaction && pb.IsMobile)) ||
-                     (pb.MapFaction != null && (!pb.MapFaction.IsBanditFaction && pb.IsMobile && !pb.MobileParty.IsCaravan && !pb.MobileParty.IsVillager && !pb.MobileParty.IsGarrison)) ) {
-                    SideAndParty sp = new SideAndParty { PartyBase = pb, Side = pb.Side };
-                    _bannerParties.Add( sp );
-                    if (pb.Side == BattleSideEnum.Attacker && _reservedReinforceAttacker == null) _reservedReinforceAttacker = pb;
-                    if (pb.Side == BattleSideEnum.Defender && _reservedReinforceDefender == null) _reservedReinforceDefender = pb;
+                MapEvent currentMapEvent = PlayerEncounter.EncounteredBattle;
+                foreach (PartyBase pb in partyList)
+                {
+                    // Check certain conditions with respect to config file
+                    if (currentMapEvent.IsRaid)
+                    {
+                        if (pb.Side == BattleSideEnum.Attacker && !_config.ALLOW_RAID_ATTACKER_BANNERS)
+                            continue;
+                        else if ((pb.Side == BattleSideEnum.Defender && !_config.ALLOW_RAID_DEFENDER_BANNERS))
+                            continue;
+                    }
+
+                    if (currentMapEvent.IsSiegeAssault || currentMapEvent.IsSiegeOutside)
+                    {
+                        if (pb.Side == BattleSideEnum.Attacker && !_config.ALLOW_SIEGE_ATTACKER_BANNERS)
+                            continue;
+                        else if ((pb.Side == BattleSideEnum.Defender && !_config.ALLOW_SIEGE_DEFENDER_BANNERS))
+                            continue;
+                    }
+
+                    if (currentMapEvent.IsHideoutBattle && !_config.ALLOW_IN_HIDEOUT)
+                    {
+                        continue;
+                    }
+
+                    // IF Non-Nobles are allowed and party is mobile and not bandit 
+                    // OR Party has MapFaction, NOT Villager or Caravan or Bandit or Garrison
+                    if ((_config.ALLOW_NON_NOBLES && (!pb.MapFaction.IsBanditFaction && pb.IsMobile)) ||
+                         (pb.MapFaction != null && (!pb.MapFaction.IsBanditFaction && pb.IsMobile && !pb.MobileParty.IsCaravan && !pb.MobileParty.IsVillager && !pb.MobileParty.IsGarrison)))
+                    {
+                        SideAndParty sp = new SideAndParty { PartyBase = pb, Side = pb.Side };
+                        _bannerParties.Add(sp);
+                        if (pb.Side == BattleSideEnum.Attacker && _reservedReinforceAttacker == null) _reservedReinforceAttacker = pb;
+                        if (pb.Side == BattleSideEnum.Defender && _reservedReinforceDefender == null) _reservedReinforceDefender = pb;
+                    }
                 }
+            } catch ( Exception e) {
+                // General exception catcher
+                _didSomehowCausedError = true;
             }
         }
 
@@ -90,6 +102,7 @@ namespace Carrier.Behavior
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
+            if (_didSomehowCausedError) return;
             if( !_isSpawnedTroops) {
                 foreach (Team team in Mission.Teams) {
                     if(team.ActiveAgents.Count > 0) {
@@ -201,7 +214,8 @@ namespace Carrier.Behavior
 
         public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow) {
             base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
-            if( agentState == AgentState.Killed || agentState == AgentState.Unconscious) {
+            if (_didSomehowCausedError) return;
+            if ( agentState == AgentState.Killed || agentState == AgentState.Unconscious) {
                 if (_bannerBearersAndObject.ContainsKey(affectedAgent)) {
                     try {
                         if(CarrierHelper.ShouldUseTorch(_config)) {
@@ -222,7 +236,8 @@ namespace Carrier.Behavior
 
         public override void OnAgentFleeing(Agent affectedAgent)
         {
-            if( _bannerBearersAndObject.ContainsKey(affectedAgent)) {
+            if (_didSomehowCausedError) return;
+            if ( _bannerBearersAndObject.ContainsKey(affectedAgent)) {
                 return;
             }
 
@@ -251,7 +266,7 @@ namespace Carrier.Behavior
                 if (!bannerAgent.IsActive() || bannerAgent.Team == null || bannerAgent.Health <= 0) continue;
 
                 if (_config.ALLOW_MORALE_BOOST_FOR_WALLS) {
-                    if (CarrierHelper.IsSiegeAssault() && !_isAnyBannermenReachedWalls && IsAgentStandingOnWalls(bannerAgent)) {
+                    if (CarrierHelper.IsSiegeAssault() && bannerAgent.Team.IsAttacker && !_isAnyBannermenReachedWalls && IsAgentStandingOnWalls(bannerAgent)) {
                         _isAnyBannermenReachedWalls = true;
                         if ( _config.ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS) {
                             if( Mission.Current.MainAgent != null && 
