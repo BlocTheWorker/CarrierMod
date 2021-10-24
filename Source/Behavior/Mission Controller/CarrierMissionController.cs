@@ -68,7 +68,7 @@ namespace Carrier.Behavior
                             continue;
                     }
 
-                    if (currentMapEvent.IsSiegeAssault || currentMapEvent.IsSiegeOutside)
+                    if (currentMapEvent.IsSiegeAssault)
                     {
                         if (pb.Side == BattleSideEnum.Attacker && !_config.ALLOW_SIEGE_ATTACKER_BANNERS)
                             continue;
@@ -154,6 +154,11 @@ namespace Carrier.Behavior
                     if (!CarrierHelper.ShouldUseTorch(_config))
                     {
                         agent.RemoveEquippedWeapon(EquipmentIndex.Weapon1);
+                        if (_config.GIVE_SWORD_TO_HAND) {
+                            ItemObject bluntSword = Game.Current.ObjectManager.GetObject<ItemObject>("carrier_cheap_sword");
+                            MissionWeapon misWep = new MissionWeapon(bluntSword, null, null);
+                            agent.EquipWeaponWithNewEntity(EquipmentIndex.Weapon1, ref misWep);
+                        }
                     }
                     else
                     {
@@ -180,7 +185,7 @@ namespace Carrier.Behavior
                         Agent a = agents.Dequeue();
                         a.Formation = f;
                         a.TeleportToPosition(f.CurrentPosition.ToVec3());
-                        if (f.IsCavalry()) {
+                        if (CarrierHelper.IsFormationMounted(f)) {
                             try {
                                 Agent randomAgent = f.GetUnitWithIndex(MBRandom.RandomInt(f.CountOfUnits - 1));
                                 MatrixFrame globalFrame = a.Frame;
@@ -228,20 +233,11 @@ namespace Carrier.Behavior
                     if (CarrierHelper.IsHideout()) return;
                     Agent[] agentsAround = Mission.Current.GetNearbyAllyAgents(affectedAgent.Position.AsVec2, this._config.MORALE_RADIUS, affectedAgent.Team).ToArray();
                     foreach(Agent a in agentsAround) {
-                        a.SetMorale(a.GetMorale() - this._config.MORALE_EFFECT);
+                        if(!_bannerBearersAndObject.ContainsKey(a))
+                            a.SetMorale(a.GetMorale() - this._config.MORALE_EFFECT);
                     }
                 }
             }
-        }
-
-        public override void OnAgentFleeing(Agent affectedAgent)
-        {
-            if (_didSomehowCausedError) return;
-            if ( _bannerBearersAndObject.ContainsKey(affectedAgent)) {
-                return;
-            }
-
-            base.OnAgentFleeing(affectedAgent);
         }
 
         //// Currently not used until I find a proper way to handle this
@@ -371,8 +367,7 @@ namespace Carrier.Behavior
                             eq.AddEquipmentToSlotWithoutAgent((EquipmentIndex)k, basicEq.GetEquipmentFromSlot((EquipmentIndex)k));
                         }
                     }
-                    if (f.IsCavalry()) {
-                        ItemObject horse = Game.Current.ObjectManager.GetObject<ItemObject>("sumpter_horse");
+                    if (CarrierHelper.IsFormationMounted(f)) {
                         eq.AddEquipmentToSlotWithoutAgent(EquipmentIndex.Horse, randomAgent.Character.Equipment.Horse);
                     }
                     agentBuildData.Equipment(eq);
@@ -386,6 +381,11 @@ namespace Carrier.Behavior
                     _bannerBearersAndObject.Add(agent, null);
                     if ( !CarrierHelper.ShouldUseTorch(_config) ) {
                         agent.RemoveEquippedWeapon(EquipmentIndex.Weapon1);
+                        if (_config.GIVE_SWORD_TO_HAND) {
+                            ItemObject bluntSword = Game.Current.ObjectManager.GetObject<ItemObject>("carrier_cheap_sword");
+                            MissionWeapon misWep = new MissionWeapon(bluntSword, null, null);
+                            agent.EquipWeaponWithNewEntity(EquipmentIndex.Weapon1, ref misWep);
+                        }
                     } else {
                         agent.AddPrefabComponentToBone("torch_burning_prefab", Game.Current.HumanMonster.MainHandItemBoneIndex);
                         Light pointLight = Light.CreatePointLight(10f);
@@ -394,7 +394,7 @@ namespace Carrier.Behavior
                         pointLight.LightColor = new Vec3(1f, 0.68f, 0.29f, -1f);
                         GameEntity lightEntity = GameEntity.CreateEmpty(Mission.Current.Scene);
                         lightEntity.AddLight(pointLight);
-                        lightEntity.SetLocalPosition(new Vec3(0.5f, 1f, 1.5f + (f.IsCavalry() ? 1:0)));
+                        lightEntity.SetLocalPosition(new Vec3(0.5f, 1f, 1.5f + (CarrierHelper.IsFormationMounted(f) ? 1:0)));
                         agent.AgentVisuals.AddChildEntity(lightEntity);
                         _bannerBearersAndObject[agent] = lightEntity;
                     }

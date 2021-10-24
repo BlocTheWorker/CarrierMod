@@ -24,6 +24,7 @@ namespace Carrier
                     ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS = true,
                     ALLOW_RAID_DEFENDER_BANNERS = false,
                     USE_UNIT_ORDER_RELAY_SOUNDS = true,
+                    GIVE_SWORD_TO_HAND= true,
                     USE_REAL_TROOP_SYSTEM = false;
 
         public int PER_INFANTRY = 5,
@@ -73,6 +74,7 @@ namespace Carrier
                 config.ALLOW_MORALE_BOOST_FOR_WALLS = (bool)conf.SelectToken("Banner.AllowMoraleBoostWhenBannermenReachWalls");
                 config.ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS = (bool)conf.SelectToken("Banner.AllowBannermenReachedMessageAndSound");
                 config.USE_REAL_TROOP_SYSTEM = (bool)conf.SelectToken("Banner.UseRealTroopSystem");
+                config.GIVE_SWORD_TO_HAND = (bool)conf.SelectToken("Banner.GiveSwordToHand");
 
                 if (int.TryParse((string)conf["Banner"]["MoraleRadius"], out int moraleRadius)) config.MORALE_RADIUS = moraleRadius;
                 if (int.TryParse((string)conf["Banner"]["MoraleDropWhenBannermanKilled"], out int moraleEffect)) config.MORALE_EFFECT = moraleEffect;

@@ -5,14 +5,14 @@
          <face_key_template value="BodyProperty.fighter_empire" />
       </face>
       <skills>
-         <skill id="Athletics" value="100" />
+         <skill id="Athletics" value="80" />
          <skill id="Riding" value="200" />
-         <skill id="OneHanded" value="70" />
-         <skill id="TwoHanded" value="40" />
-         <skill id="Polearm" value="40" />
-         <skill id="Bow" value="30" />
-         <skill id="Crossbow" value="30" />
-         <skill id="Throwing" value="70" />
+         <skill id="OneHanded" value="1" />
+         <skill id="TwoHanded" value="1" />
+         <skill id="Polearm" value="1" />
+         <skill id="Bow" value="1" />
+         <skill id="Crossbow" value="1" />
+         <skill id="Throwing" value="1" />
       </skills>
       <Equipments>
          <EquipmentRoster>

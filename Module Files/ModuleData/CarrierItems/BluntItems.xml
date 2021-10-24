@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <CraftedItem id="carrier_cheap_sword"
+               name="{=2Igdc86g}Sword"
+               crafting_template="OneHandedSword"
+               is_merchandise="false"
+               culture="Culture.empire"
+               has_modifier="false">
+    <Pieces>
+      <Piece id="wood_blade_1"
+             Type="Blade"
+             scale_factor="100" />
+      <Piece id="cleaver_guard_4"
+             Type="Guard"
+             scale_factor="100" />
+      <Piece id="empire_grip_6"
+             Type="Handle"
+             scale_factor="100" />
+      <Piece id="empire_pommel_1"
+             Type="Pommel"
+             scale_factor="100" />
+    </Pieces>
+ </CraftedItem>
+</Items>

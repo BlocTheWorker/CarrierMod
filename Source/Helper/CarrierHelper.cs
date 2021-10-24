@@ -46,6 +46,18 @@ namespace Carrier.Helper
             }
         }
 
+        public static bool IsFormationMounted(Formation f) {
+            int totalCount = f.CountOfUnits;
+            if (totalCount == 0) return false;
+            int mountedCount = 0;
+            for(int k=0; k < totalCount; k++) {
+                Agent a = f.GetUnitWithIndex(k);
+                if (a.HasMount) mountedCount++;
+            }
+            if (mountedCount == 0) return false;
+            return (mountedCount/totalCount) > 0.8;
+        }
+
         /// <summary>
         /// Get basic troop equipment. If tier based is allowed, this will return better equipment with respect to upgrade path of troop 
         /// </summary>

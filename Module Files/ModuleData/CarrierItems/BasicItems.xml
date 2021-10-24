@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+    <Item id="carrier_standard_banner"
+        name="{=BLCC5FzIOYzl}Standard Banner"
+        is_merchandise="false"
+        body_name="bo_spear_b"
+        recalculate_body="true"
+        mesh="campaign_flag"
+        using_tableau="true"
+        value="100"
+        weight="5"
+        appearance="1"
+        Type="Banner"
+        item_holsters="throwing_stone_2"
+		holster_position_shift="-0.17,0.19, -0.2">
+        <ItemComponent>
+            <Weapon weapon_class="Banner"
+              speed_rating="82"
+              item_usage="banner"
+              position="0.0, 0.0, -0.8"
+              physics_material="wood_weapon"
+              weapon_length="104"></Weapon>
+        </ItemComponent>
+        <Flags WoodenParry="true"
+           ForceAttachOffHandPrimaryItemBone="true"
+           DropOnWeaponChange="false"
+           HeldInOffHand="true"
+           HasToBeHeldUp="true" />
+    </Item>
+	
+	<Item id="carrier_gonfalon_banner"
+        name="{=BLCCX1clnt60}Gonfalon Banner"
+        is_merchandise="false"
+        body_name="bo_spear_b"
+        recalculate_body="true"
+        mesh="map_banner"
+        using_tableau="true"
+        value="100"
+        weight="5"
+		rotation="0, -90, 0"
+        appearance="1"
+        Type="Banner"
+        item_holsters="throwing_stone_2"
+		holster_position_shift="-0.17,0.19, -0.2">
+        <ItemComponent>
+            <Weapon weapon_class="Banner"
+              speed_rating="82"
+              item_usage="banner"
+              position="0.0, 0.0, -0.8"
+              physics_material="big_flag"
+              weapon_length="104"></Weapon>
+        </ItemComponent>
+        <Flags WoodenParry="true"
+           ForceAttachOffHandPrimaryItemBone="true"
+           DropOnWeaponChange="false"
+           HeldInOffHand="true"
+           HasToBeHeldUp="true" />
+    </Item>
+	
+	
+    <Item id="carrier_standard_torch"
+        name="{=BLCCX1clnt61}Torch"
+        is_merchandise="false"
+        body_name="bo_mace_a"
+        recalculate_body="true"
+        mesh="torch_g"
+        value="1"
+		Type="OneHandedWeapon"
+        item_holsters="throwing_stone_2"
+        weight="0.1">
+        <ItemComponent>
+            <Weapon weapon_class="OneHandedAxe"
+              weapon_balance="100"
+              thrust_speed="78"
+              speed_rating="97"
+              missile_speed="0"
+              weapon_length="65"
+              swing_damage="6"
+              swing_damage_type="Blunt"
+              item_usage="torch"
+              physics_material="metal_weapon">
+               <WeaponFlags 
+			         LeavesTrail="true"
+                     Burning="true" MeleeWeapon="true" />
+            </Weapon>
+        </ItemComponent>
+        <Flags 
+		   DropOnWeaponChange="false"
+           HeldInOffHand="false"
+           HasToBeHeldUp="true" />
+    </Item>
+</Items>
