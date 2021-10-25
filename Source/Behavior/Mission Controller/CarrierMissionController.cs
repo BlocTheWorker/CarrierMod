@@ -37,7 +37,7 @@ namespace Carrier.Behavior
         {
             try
             {
-                _lastTick = Mission.Current.Time;
+                _lastTick = Mission.Current.CurrentTime;
                 _bannerParties = new List<SideAndParty>();
                 _bannerBearersAndObject = new Dictionary<Agent, GameEntity>();
 
@@ -118,9 +118,9 @@ namespace Carrier.Behavior
                 }
             }
 
-            if (OCCASIONAL_TICK < Mission.Current.Time - _lastTick)
+            if (OCCASIONAL_TICK < Mission.Current.CurrentTime - _lastTick)
             {
-                _lastTick = Mission.Current.Time;
+                _lastTick = Mission.Current.CurrentTime;
                 InternalOccasionalTick();
             }
         }
@@ -229,6 +229,9 @@ namespace Carrier.Behavior
                             light.Dispose();
                             entity.Remove(0);
                         }
+                    } catch { }
+                    try {
+                        affectedAgent.AgentVisuals.SetClothWindToWeaponAtIndex(new Vec3(0,0,0), true, EquipmentIndex.Weapon0);
                     } catch { }
                     if (CarrierHelper.IsHideout()) return;
                     Agent[] agentsAround = Mission.Current.GetNearbyAllyAgents(affectedAgent.Position.AsVec2, this._config.MORALE_RADIUS, affectedAgent.Team).ToArray();

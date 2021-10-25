@@ -42,7 +42,7 @@ namespace Carrier.Behavior.Mission_Controller
             while (!stackDone) {
                 if (_actionQueue.Count > 0) {
                     KeyValuePair<float, VoiceAction> pair = _actionQueue.Peek();
-                    if ((pair.Key * -1) <= Mission.Current.Time) {
+                    if ((pair.Key * -1) <= Mission.Current.CurrentTime) {
                         VoiceAction vAction = _actionQueue.Dequeue().Value;
                         vAction.Action(vAction.ResponsiveAgent, vAction.Voice);
                     } else {
@@ -69,7 +69,7 @@ namespace Carrier.Behavior.Mission_Controller
                     for (int k = 0; k < count; k++) {
                         Agent agent = f.GetUnitWithIndex(MBRandom.RandomInt(f.CountOfUnits - 1));
                         VoiceAction va = new VoiceAction() { Action = ShoutAndRelayOrders, Voice = SkinVoiceManager.VoiceType.Advance, ResponsiveAgent = agent };
-                        float currentTime = Mission.Current.Time;
+                        float currentTime = Mission.Current.CurrentTime;
                         if (orderType == OrderType.Advance)
                             va.Voice = SkinVoiceManager.VoiceType.Advance;
                         else if (orderType == OrderType.HoldFire)

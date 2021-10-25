@@ -37,7 +37,6 @@
         using_tableau="true"
         value="100"
         weight="5"
-		rotation="0, -90, 0"
         appearance="1"
         Type="Banner"
         item_holsters="throwing_stone_2"
@@ -46,6 +45,7 @@
             <Weapon weapon_class="Banner"
               speed_rating="82"
               item_usage="banner"
+			  rotation="0, 0, -90"
               position="0.0, 0.0, -0.8"
               physics_material="big_flag"
               weapon_length="104"></Weapon>

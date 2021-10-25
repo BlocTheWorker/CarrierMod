@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <NPCCharacters>
-  <NPCCharacter id="standard_banner_carrier" default_group="Infantry" is_hero="false" level="16" name="{=BLCCliLPkcas}Banner Carrier" occupation="Mercenary" culture="Culture.neutral_culture" skill_template="NPCCharacter.infantry_heavyinfantry_level16_template_skills">
-      <face>
-         <face_key_template value="BodyProperty.fighter_empire" />
-      </face>
-      <skills>
-         <skill id="Athletics" value="80" />
-         <skill id="Riding" value="200" />
-         <skill id="OneHanded" value="1" />
-         <skill id="TwoHanded" value="1" />
-         <skill id="Polearm" value="1" />
-         <skill id="Bow" value="1" />
-         <skill id="Crossbow" value="1" />
-         <skill id="Throwing" value="1" />
-      </skills>
-      <Equipments>
-         <EquipmentRoster>
-		 <equipment slot="Item0" id="Item.carrier_standard_banner" />
-		 <equipment slot="Item1" id="Item.carrier_standard_torch" />
-        <equipment slot="Head"
-                   id="Item.leather_cap" />
-        <equipment slot="Body"
-                   id="Item.tunic_with_shoulder_pads" />
-        <equipment slot="Leg"
-                   id="Item.empire_horseman_boots" />
-         </EquipmentRoster>
-		 <EquipmentRoster>
-		 <equipment slot="Item0" id="Item.carrier_gonfalon_banner" />
-		 <equipment slot="Item1" id="Item.carrier_standard_torch" />
-        <equipment slot="Head"
-                   id="Item.leather_cap" />
-        <equipment slot="Body"
-                   id="Item.tunic_with_shoulder_pads" />
-        <equipment slot="Leg"
-                   id="Item.empire_horseman_boots" />
-         </EquipmentRoster>
-         <EquipmentSet id="empire_troop_civilian_template_t1" civilian="true" />
-      </Equipments>
-      <upgrade_targets>
-      </upgrade_targets>
-   </NPCCharacter>
+    <NPCCharacter id="standard_banner_carrier" default_group="Infantry" is_hero="false" level="16" name="{=BLCCliLPkcas}Banner Carrier" occupation="Mercenary" culture="Culture.neutral_culture" skill_template="NPCCharacter.infantry_heavyinfantry_level16_template_skills">
+        <face>
+            <face_key_template value="BodyProperty.fighter_empire" />
+        </face>
+        <skills>
+            <skill id="Athletics" value="80" />
+            <skill id="Riding" value="200" />
+            <skill id="OneHanded" value="1" />
+            <skill id="TwoHanded" value="1" />
+            <skill id="Polearm" value="1" />
+            <skill id="Bow" value="1" />
+            <skill id="Crossbow" value="1" />
+            <skill id="Throwing" value="1" />
+        </skills>
+        <Equipments>
+            <EquipmentRoster>
+                <equipment slot="Item0" id="Item.carrier_standard_banner" />
+                <equipment slot="Item1" id="Item.carrier_standard_torch" />
+                <equipment slot="Head" id="Item.leather_cap" />
+                <equipment slot="Body" id="Item.tunic_with_shoulder_pads" />
+                <equipment slot="Leg" id="Item.empire_horseman_boots" />
+            </EquipmentRoster>
+            <EquipmentRoster>
+                <equipment slot="Item0" id="Item.carrier_gonfalon_banner" />
+                <equipment slot="Item1" id="Item.carrier_standard_torch" />
+                <equipment slot="Head" id="Item.leather_cap" />
+                <equipment slot="Body" id="Item.tunic_with_shoulder_pads" />
+                <equipment slot="Leg" id="Item.empire_horseman_boots" />
+            </EquipmentRoster>
+            <EquipmentSet id="empire_troop_civilian_template_t1" civilian="true" />
+        </Equipments>
+    </NPCCharacter>
 </NPCCharacters>
