@@ -27,6 +27,8 @@
 	  "UseTierBasedBannerman": true,
 	  "AlsoUseTorchAtNight": true,
 	  "AllowNonNobleArmiesToCarryBanner": false,
-	  "UseResponsiveUnits": true
+	  "UseResponsiveUnits": true,
+ 	  "AllowSoldierAmbianceSounds": true,
+          "AllowWarCryAnimation": true
   }
 }

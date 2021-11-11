@@ -284,14 +284,26 @@ namespace Carrier.Behavior
                 }
 
                 Agent[] agentsAround = Mission.Current.GetNearbyAllyAgents(bannerAgent.Position.AsVec2, this._config.MORALE_RADIUS, bannerAgent.Team).ToArray();
+                int enemyCount = Mission.Current.GetNearbyEnemyAgentCount(bannerAgent.Team, bannerAgent.Position.AsVec2, 50);
                 foreach (Agent a in agentsAround)  {
                     float currentMorale = a.GetMorale();
                     if(currentMorale < _config.MAXIMUM_MORALE_WHILE_AROUND) {
                         float newMorale = Math.Min(currentMorale, currentMorale + this._config.MORALE_EFFECT);
-                        a.SetMorale(newMorale);
-                        if( a.GetMorale() > 60) {
-                            a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);
-                        }
+                        a.SetMorale(newMorale);    
+                    }
+                    
+                    if (currentMorale > 50 && _config.ALLOW_AMBIANCE_SOUNDS && Mission.Current.CurrentState == Mission.State.Continuing && agentsAround.Count() > 10  && !(Mission.Current.MissionResult!=null && Mission.Current.MissionResult.BattleState != BattleState.None)) {
+                        a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);
+                        try {
+                            if (_config.ALLOW_WARCRY_ANIMATION
+                                && enemyCount < 3
+                                && !(a.IsDoingPassiveAttack || a.IsReleasingChainAttack())
+                                && !a.Velocity.IsNonZero && !(CarrierHelper.IsSiegeAssault() && a.Team.IsDefender) && !(a.Formation != null && a.Formation.IsRanged()))
+                            {
+                                a.SetActionChannel(1, ActionIndexCache.Create("act_taunt_cheer_2"));
+                                a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);
+                            }
+                        } catch { }
                     }
                 }
             }

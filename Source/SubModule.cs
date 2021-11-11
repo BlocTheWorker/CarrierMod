@@ -24,7 +24,9 @@ namespace Carrier
                     ALLOW_MORALE_BOOST_MESSAGE_FOR_WALLS = true,
                     ALLOW_RAID_DEFENDER_BANNERS = false,
                     USE_UNIT_ORDER_RELAY_SOUNDS = true,
-                    GIVE_SWORD_TO_HAND= true,
+                    GIVE_SWORD_TO_HAND = true,
+                    ALLOW_AMBIANCE_SOUNDS = true,
+                    ALLOW_WARCRY_ANIMATION= false,
                     USE_REAL_TROOP_SYSTEM = false;
 
         public int PER_INFANTRY = 5,
@@ -63,6 +65,8 @@ namespace Carrier
                 config.ALLOW_NON_NOBLES = (bool)extras["AllowNonNobleArmiesToCarryBanner"];
                 config.USE_TIER_BASED_BANNERMAN = (bool)extras["UseTierBasedBannerman"];
                 config.USE_UNIT_ORDER_RELAY_SOUNDS = (bool)extras["UseResponsiveUnits"];
+                config.ALLOW_AMBIANCE_SOUNDS = (bool)extras["AllowSoldierAmbianceSounds"];
+                config.ALLOW_WARCRY_ANIMATION = (bool)extras["AllowWarCryAnimation"];
             }
             
             if (conf.ContainsKey("Banner"))

@@ -1,7 +1,7 @@
 ﻿<Module>
   <Name value="Carrier"/>
   <Id value="Carrier"/>
-  <Version value="v1.0.4"/>
+  <Version value="v1.0.4.2"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
