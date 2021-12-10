@@ -1,14 +1,14 @@
 ﻿<Module>
   <Name value="Carrier"/>
   <Id value="Carrier"/>
-  <Version value="v1.0.4.2"/>
+  <Version value="v1.0.4.3"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
-    <DependedModule Id="Native" DependentVersion="e1.6.4"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="e1.6.4"/>
-    <DependedModule Id="Sandbox" DependentVersion="e1.6.4"/>
-    <DependedModule Id="StoryMode" DependentVersion="e1.6.4"/>
+    <DependedModule Id="Native" DependentVersion="e1.6.5"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="e1.6.5"/>
+    <DependedModule Id="Sandbox" DependentVersion="e1.6.5"/>
+    <DependedModule Id="StoryMode" DependentVersion="e1.6.5"/>
   </DependedModules>
   <SubModules>
     <SubModule>

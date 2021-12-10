@@ -44,7 +44,7 @@ namespace Carrier.Behavior
                 if (!Mission.Current.Scene.IsAtmosphereIndoor && !CarrierHelper.IsHideout())
                 {
                     // Get spawnlogic and register it's phase change events. Although currently I have no good solution to create bannerman on reinforce waves
-                    MissionAgentSpawnLogic spawnLogicBehavior = Mission.Current.GetMissionBehaviour<MissionAgentSpawnLogic>();
+                    MissionAgentSpawnLogic spawnLogicBehavior = Mission.Current.GetMissionBehavior<MissionAgentSpawnLogic>();
                     spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Attacker, new OnPhaseChangedDelegate(this.OnAttackerPhaseChanged));
                     spawnLogicBehavior.AddPhaseChangeAction(BattleSideEnum.Defender, new OnPhaseChangedDelegate(this.OnDefenderPhaseChanged));
                 }
@@ -298,7 +298,8 @@ namespace Carrier.Behavior
                             if (_config.ALLOW_WARCRY_ANIMATION
                                 && enemyCount < 3
                                 && !(a.IsDoingPassiveAttack || a.IsReleasingChainAttack())
-                                && !a.Velocity.IsNonZero && !(CarrierHelper.IsSiegeAssault() && a.Team.IsDefender) && !(a.Formation != null && a.Formation.IsRanged()))
+                                && !a.Velocity.IsNonZero && !(CarrierHelper.IsSiegeAssault() && a.Team.IsDefender) && !(a.Formation != null && a.Formation.IsRanged())
+                              && !(a.Formation != null && a.Formation.IsCavalry())) // cavalry units are acting weird, disable their shouting
                             {
                                 a.SetActionChannel(1, ActionIndexCache.Create("act_taunt_cheer_2"));
                                 a.MakeVoice(SkinVoiceManager.VoiceType.Yell, SkinVoiceManager.CombatVoiceNetworkPredictionType.NoPrediction);

@@ -99,9 +99,9 @@ namespace Carrier.Behavior {
                 Mission currrentMission = (Mission)mission;
                 if (currrentMission == null || currrentMission.CombatType != Mission.MissionCombatType.Combat || (PlayerEncounter.Battle != null && PlayerEncounter.Battle.IsAlleyFight)) return;
                 if (PlayerEncounter.EncounteredBattle == null) return;
-                currrentMission.AddMissionBehaviour((MissionBehaviour)new CarrierMissionController(_config));
+                currrentMission.AddMissionBehavior((MissionBehavior)new CarrierMissionController(_config));
                 if( _config.USE_UNIT_ORDER_RELAY_SOUNDS)
-                currrentMission.AddMissionBehaviour((MissionBehaviour)new SoldierResponseController(_config));
+                currrentMission.AddMissionBehavior((MissionBehavior)new SoldierResponseController(_config));
             } catch { }
         }
 
